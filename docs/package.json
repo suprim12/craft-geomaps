@@ -1,0 +1,13 @@
+{
+  "name": "geo-docs",
+  "version": "1.0.0",
+  "description": "Maps Craft CMS plugin documentation",
+  "scripts": {
+    "docs:dev": "vitepress dev src",
+    "docs:build": "vitepress build src",
+    "docs:preview": "vitepress preview src"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}

@@ -1,0 +1,79 @@
+{# 
+	* Geo Maps plugin for Craft CMS
+	*
+	* @link      https://suprimgolay.com.np/craft-plugins
+	* @author suprim golay <suprimtech@gmail.com> <https://suprimgolay.com.np>
+	* @copyright Copyright (c) 2026 Suprim Golay
+	* 
+ #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{% set configFileExists = config is not empty %}
+
+{% if configFileExists %}
+ <div class="readable">
+        <blockquote class="note">
+            <p>
+                {{ 'Some settings are being overridden by your' }}
+                <code>config/geo.php</code>
+            </p>
+        </blockquote>
+    </div>
+{% endif %}
+
+
+{{ forms.autosuggestField({
+	label: 'Map Token',
+	id: 'mapToken',
+    suggestEnvVars: true,
+	name: 'mapToken',
+    value: settings.mapToken,
+    disabled:   configFileExists and config.mapToken is defined,
+	required: true,
+	errors: settings.getErrors('mapToken')
+}) }}
+
+
+{{ forms.autosuggestField({
+	label: 'Geo Token',
+	id: 'geoToken',
+	name: 'geoToken',
+    suggestEnvVars: true,
+	value: settings.geoToken,
+    disabled:  configFileExists and config.geoToken  is defined,
+	required: true,
+	errors: settings.getErrors('geoToken')
+}) }}
+
+<div class="geo_info">
+    <a href="https://cloud.google.com/maps-platform/#get-started" target="_blank" rel="nofollow" class="active">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" width="29" height="30" viewBox="0 0 29 30"><defs><polygon id="settings-google-a" points=".02 .031 14.098 .031 14.098 22.425 .02 22.425"></polygon></defs> <g fill="none" fill-rule="evenodd"><path fill="#07A25C" d="M0 27.285V6.035a2.238 2.238 0 0 1 2.238-2.237h21.249L0 27.285z"></path> <path fill="#FFE22C" d="M0 27.731v-.446L23.487 3.798h.446a2.239 2.239 0 0 1 2.238 2.238v.446L2.684 29.97h-.446A2.238 2.238 0 0 1 0 27.731"></path> <polygon fill="#6186C3" points="2.684 29.969 13.086 19.568 23.487 29.969"></polygon> <path fill="#FEFEFE" d="M23.487 29.969l-10.56-10.56 2.684-2.684 10.56 10.56v.446a2.239 2.239 0 0 1-2.238 2.238h-.446z"></path> <polygon fill="#DBD9DA" points="26.171 27.285 15.769 16.883 26.171 6.482"></polygon> <path fill="#F5F5F5" d="M10.037 9.45H6.531v1.216h2.075a2.19 2.19 0 1 1-.643-2.36l.97-.948a3.543 3.543 0 1 0 1.104 2.092"></path> <g transform="translate(14.416 .027)"><mask id="settings-google-b" fill="#fff"><use xlink:href="#settings-google-a"></use></mask> <path fill="#DD4231" d="M7.064 22.425h-.01c-.234 0-.357-.177-.383-.368-.569-4.127-1.652-5.678-2.578-7.214C2.554 12.293.02 9.471.02 6.669.02 3.139 2.908.03 7.048.03h.021c4.14 0 7.03 3.109 7.03 6.638 0 2.802-2.536 5.625-4.074 8.174-.927 1.536-2.01 3.087-2.579 7.214-.026.19-.148.368-.382.368" mask="url(#settings-google-b)"></path></g> <path fill="#8E2F22" d="M19.762 5.068a2.425 2.425 0 0 1 3.427 0 2.425 2.425 0 0 1 0 3.426 2.425 2.425 0 0 1-3.427 0 2.426 2.426 0 0 1 0-3.426"></path></g></svg> <span><em>Google Maps</em>
+        You will need to enable the <strong>Maps JavaScript API</strong> and <strong>Places API</strong> for if using Google for the map tiles, and the <strong>Places API</strong> and <strong>Geocoding API</strong> if you are using it for the Geo service.
+    </span></a>
+</div>
+
+{% css %}
+    .geo_info{
+        display:flex;
+        width:50%;
+    }
+     .geo_info svg{
+        width:24px;
+        height:24px;
+        display: flex;
+        flex: 1;
+        max-width: 24px;
+        margin-top:0.3rem
+     }
+       .geo_info span{
+        flex:1;
+       }
+    .geo_info a{
+        display:flex;
+        gap:1rem;
+        align-items:flex-start;
+        color:inherit;
+        text-decoration:none;
+    }
+{% endcss %}

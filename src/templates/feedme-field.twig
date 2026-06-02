@@ -1,0 +1,58 @@
+{# 
+	* Geo Maps plugin for Craft CMS
+	*
+	* @link      https://suprimgolay.com.np/craft-plugins
+	* @author suprim golay <suprimtech@gmail.com> <https://suprimgolay.com.np>
+	* @copyright Copyright (c) 2026 Suprim Golay
+	* 
+ #}
+
+{% import 'feed-me/_macros' as feedMeMacro %}
+{% import '_includes/forms' as forms %}
+
+
+{% if parentPath is defined %}
+	{% set prefixPath = parentPath %}
+{% else %}
+	{% set prefixPath = [handle] %}
+{% endif %}
+
+
+{% set subFields = {
+    lat:          'Latitude',
+    lng:          'Longitude',
+    zoom:         'Zoom',
+    full_address: 'Full Address',
+    address1:     'Address Line 1',
+    suburb:       'Suburb',
+    postcode:     'Postcode',
+    country:      'Country',
+    geoJson:      'GeoJSON',
+} %}
+
+{% for key, label in subFields %}
+	{% set splitKey = '.' in key %}
+	{% set subKey = null %}
+    	{% if splitKey %}
+		{% set key = key|split('.') %}
+		{% set subKey = key[1] %}
+		{% set key = key[0] %}
+	{% endif %}
+	{% set nameLabel = label %}
+	{% set instructionsHandle = handle ~ '[' ~ key ~ ']' ~ (subKey ? '[' ~ subKey ~ ']') %}
+	{% set path = prefixPath | merge ([ 'fields', key, subKey ]|filter) %}
+
+    {% set default = default ?? {
+		type: 'text',
+	} %}
+
+    {% embed 'feed-me/_includes/fields/_base' %}
+		{% block additionalFieldSettings %}
+
+		{% endblock %}
+
+		{% block fieldSettings %}
+
+		{% endblock %}
+	{% endembed %}
+{% endfor %}

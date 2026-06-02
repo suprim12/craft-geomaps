@@ -1,0 +1,78 @@
+{# 
+	* Geo Maps plugin for Craft CMS
+	*
+	* @link      https://suprimgolay.com.np/craft-plugins
+	* @author suprim golay <suprimtech@gmail.com> <https://suprimgolay.com.np>
+	* @copyright Copyright (c) 2026 Suprim Golay
+	* 
+ #}
+
+ 
+
+{% import '_includes/forms.twig' as forms %}
+
+
+{{ forms.field({
+	label: 'Initial Location',
+	instructions: 'The initial location and zoom that will show in the map field',
+}, map) }}
+
+
+{{ forms.lightswitchField({
+	label: 'Hide Search',
+	instructions: 'Hide the location search field',
+	id: 'hideSearch',
+	name: 'hideSearch',
+	on: field.hideSearch
+}) }}
+
+{{ forms.lightswitchField({
+	label: 'Hide Address',
+	instructions: 'Hide the address fields',
+	id: 'hideAddress',
+	name: 'hideAddress',
+	on: field.hideAddress
+}) }}
+
+{{ forms.lightswitchField({
+	label: 'Hide Map',
+	instructions: 'Hide the map',
+	id: 'hideMap',
+	name: 'hideMap',
+	on: field.hideMap
+}) }}
+
+
+{{ forms.textField({
+	label: 'Min Zoom',
+	instructions: 'The minimum level the user can zoom the map out to.',
+	id: 'minZoom',
+	name: 'minZoom',
+	type: 'number',
+	value: field.minZoom,
+	min: 0,
+	max: 18,
+	step: 0.01,
+}) }}
+
+{{ forms.textField({
+	label: 'Max Zoom',
+	instructions: 'The maximum level the user can zoom the map in to.',
+	id: 'maxZoom',
+	name: 'maxZoom',
+	type: 'number',
+	value: field.maxZoom,
+	min: 0,
+	max: 18,
+	step: 0.01,
+}) }}
+
+{{ forms.selectField({
+	label: 'Preferred Country',
+	instructions: 'When searching for a location, results in this country will take precedence. Be aware that some services will show results ONLY within this country.'|t('simplemap'),
+	id: 'country',
+	name: 'country',
+	options: countries,
+	value: field.country,
+}) }}
+
