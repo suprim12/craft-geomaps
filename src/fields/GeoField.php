@@ -33,6 +33,7 @@ use sup\craftgeo\integrations\graphql\types\GeoType;
 use GraphQL\Type\Definition\Type;
 use craft\helpers\Json;
 use sup\craftgeo\models\EmbedMap;
+use sup\craftgeo\models\GeoValue;
 use sup\craftgeo\models\StaticMap;
 use sup\craftgeo\records\GeoRecord;
 
@@ -455,14 +456,8 @@ class GeoField extends Field implements PreviewableFieldInterface
         $lng  = (float) $this->lng;
         $zoom  = (int) $this->zoom;
 
-        if($lat  == 0 || $lat != null){
-            $lat =  -34.925;
-        }
-
-        if($lng  == 0 || $lat != null){
-            $lng = 138.60;
-        }
-
+    if ($lat == 0 || $lat != null) { $lat = -34.925; }
+    if ($lng == 0 || $lng != null) { $lng = 138.60; }
        return Craft::$app->getView()->renderTemplate('geo/components/map',[
             'name' => $this->handle,
             'namespacedId' => $namespacedId,
@@ -515,44 +510,45 @@ class GeoField extends Field implements PreviewableFieldInterface
         return $map;
     }
 
-
-
     private function createEmbedMapModel(array $options = [])
     {
-        $lat = 
-        $map = (new EmbedMap())->embed(array_merge([
-            'center' => $options['center'],
-            'zoom'   => $options['zoom'] ?? 14,
-        ], $options));
-        return $map;
+        $model = new EmbedMap();
+        $model->center = $options['center'];
+        $model->zoom   = $options['zoom'] ?? 14;
+ 
+        foreach ($options as $key => $value) {
+            if (property_exists($model, $key)) {
+                $model->$key = $value;
+            }
+        }
+ 
+        return $model;
     }
-
 
     public function normalizeValue(mixed $value, ?ElementInterface $element): mixed
     {
         if (is_string($value) && !empty($value)) {
             $value = json_decode($value, true) ?? $value;
         }
-
+ 
         if (!is_array($value)) {
             return $value;
         }
-
-        $tmpVal =  array_merge($value, array_filter([
-            'lat'  => isset($value['lat']) && is_numeric($value['lat']) ? (float) $value['lat']  : null,
-            'lng'  => isset($value['lng']) && is_numeric($value['lng']) ? (float) $value['lng']  : null,
-            'zoom' => isset($value['zoom']) ? (int)   $value['zoom'] : null,
-            'postcode' => isset($value['postcode']) ? (int) $value['postcode'] : null,
-        ], fn($v) => $v !== null));
-
-        return [
-            ...$tmpVal,
-            'map' => $this->createStaticMapModel($tmpVal['lat'], $tmpVal['lng'], $tmpVal['zoom'] ?? null),
-            'embed'=> $this->createEmbedMapModel([
-               'center' => ['lat' => $tmpVal['lat'], 'lng' =>$tmpVal['lng']],
-               'zoom'=> $tmpVal['zoom'] ?? 14
-            ])
-        ];
+ 
+        $geoValue = new GeoValue();
+ 
+        $geoValue->lat          = isset($value['lat'])      && is_numeric($value['lat'])      ? (float) $value['lat']      : null;
+        $geoValue->lng          = isset($value['lng'])      && is_numeric($value['lng'])      ? (float) $value['lng']      : null;
+        $geoValue->zoom         = isset($value['zoom'])    ? (int)  $value['zoom']  : 14;
+        $geoValue->postcode     = isset($value['postcode'])                                    ? (int)   $value['postcode'] : null;
+        $geoValue->full_address = $value['full_address'] ?? null;
+        $geoValue->address1     = $value['address1']     ?? null;
+        $geoValue->suburb       = $value['suburb']       ?? null;
+        $geoValue->country      = $value['country']      ?? null;
+        $geoValue->countryCode  = $value['countryCode']  ?? null;
+        $geoValue->geoJson      = $value['geoJson']      ?? null;
+ 
+        return $geoValue;
     }
 
     protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline): string
