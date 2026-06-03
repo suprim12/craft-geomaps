@@ -15,8 +15,6 @@ When accessing the Map field in Twig, you have access to the following propertie
 | `lat` | The latitude of the selected map location |
 | `lng` | The longitude of the selected map location |
 | `zoom` | The zoom level of the map |
-| `address` | The full address (see [Address](#address)) |
-| `parts` | The separate parts of the address (see [Parts](#parts)) |
 | `distance` | Distance from your search (only populated when [Searching](#searching)) |
 
 ### Address
@@ -40,6 +38,6 @@ The example above outputs the address as a comma-separated string, excluding the
 | `county` | The county |
 | `state` | The state or region |
 | `country` | The country |
-| `countryCode` | The country Code |
+| `countryCode` | The country code |
 | `geoJson` | The geo Json value |
 

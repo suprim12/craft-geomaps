@@ -1,14 +1,13 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: 'Maps',
+  title: 'Geo Maps',
   description: 'A beautifully simple, yet deceptively powerful map field for Craft CMS',
   base: '/',
 
   themeConfig: {
     logo: { src: '/logo.svg', width: 24, height: 24 },
-    siteTitle: 'Maps',
-
+    siteTitle: 'Geo Maps',
     nav: [
       { text: 'Plugin Store', link: 'https://plugins.craftcms.com/', target: '_blank' },
     ],
@@ -29,14 +28,14 @@ export default defineConfig({
       {
         text: 'How-to Guides',
         items: [
-          { text: 'Search by Location', link: '/how-to/search' },
+          { text: 'Location Search', link: '/how-to/search' },
           { text: 'Querying in GraphQL', link: '/how-to/graphql' },
         ],
       },
       {
         text: 'Rendering',
         items: [
-          { text: 'Embed Dynamic Maps', link: '/rendering/embed' },
+          { text: 'Render Maps', link: '/rendering/render' },
         ],
       },
       {
