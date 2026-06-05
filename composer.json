@@ -5,10 +5,10 @@
   "license": "proprietary",
   "support": {
     "email": "suprimtech@gmail.com",
-    "issues": "https://github.com/suprim12/craft-geo/issues?state=open",
-    "source": "https://github.com/suprim12/craft-geo",
-    "docs": "https://github.com/suprim12/craft-geo",
-    "rss": "https://github.com/suprim12/craft-geo/releases.atom"
+    "issues": "https://github.com/suprim12/craft-geomaps/issues?state=open",
+    "source": "https://github.com/suprim12/craft-geomaps",
+    "docs": "https://github.com/suprim12/craft-geomaps",
+    "rss": "https://github.com/suprim12/craft-geomaps/releases.atom"
   },
   "require": {
     "php": ">=8.2",
@@ -27,7 +27,7 @@
     "handle": "geo",
     "name": "Geo Maps",
     "developer": "suprim golay",
-    "documentationUrl": "https://github.com/suprim12/craft-geo",
+    "documentationUrl": "https://github.com/suprim12/craft-geomaps",
     "class": "sup\\craftgeo\\Geo"
   },
   "scripts": {
