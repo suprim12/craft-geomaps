@@ -7,7 +7,6 @@
 	* 
  #}
 
-
 {% set mapData = mapdata %}
 {% if settings is not empty %}
 	{% set mapData = mapData|merge(settings) %}
@@ -19,74 +18,166 @@
 
 
 {% if global_settings.mapToken is not empty %}
-	<div x-data="appgeo" x-init="initMap({{mapData|json_encode}}, true, {{settings|json_encode()}})" class="supgeo {{settings.hideMap ? ' --hideMap ':''}}" :class="{ ' --showEditor ': showEditor }">
+	<div x-data="appgeo" 
+	   x-init="initMap({{mapData|json_encode}},true,{{settings|json_encode()}})" 
+	   class="supgeo {{settings.hideMap ? ' --hideMap ':''}}"
+	  :class="{ ' --showEditor ': showEditor }">
 		<div class="supgeo__wrapper" x-ref="geowrapper">
-		    <div class="supgeo__map_search" >
-			<div class="supgeo__wrapper_map">
-				{% if settings.hideSearch == false %}
-					<div class="supgeo__search" x-show="!notokenAdded && !showEditor">
-						<div class="supgeo__search_icon">
-							<svg width="25" height="24" fill="none" viewbox="0 0 25 24">
-								<path fill="#5e5e5e" fill-rule="evenodd" d="M15.56 13.27 21.29 19l-1.49 1.49-5.73-5.73A6.4 6.4 0 0110.3 16a6.5 6.5 0 116.5-6.5c0 1.41-.47 2.7-1.24 3.77M10.3 5a4.5 4.5 0 10-.01 8.99A4.5 4.5 0 0010.3 5" clip-rule="evenodd"></path>
-							</svg>
+			<div class="supgeo__map_search">
+				{# Autocomplete Panel #}
+				<div class="supgeo__wrapper_map">
+					{% if settings.hideSearch == false %}
+						<div class="supgeo__search" x-show="!notokenAdded && !showEditor">
+							<div class="supgeo__search_icon">
+								<svg width="25" height="24" fill="none" viewbox="0 0 25 24">
+									<path fill="#5e5e5e" fill-rule="evenodd" d="M15.56 13.27 21.29 19l-1.49 1.49-5.73-5.73A6.4 6.4 0 0110.3 16a6.5 6.5 0 116.5-6.5c0 1.41-.47 2.7-1.24 3.77M10.3 5a4.5 4.5 0 10-.01 8.99A4.5 4.5 0 0010.3 5" clip-rule="evenodd"></path>
+								</svg>
+							</div>
+							<div x-ref="apgeo-search" class="supgeo-search-wrapper" x-show="!hideSearch">
+								<input type="text" class="supgeo-search-input text fullwidth" placeholder="Search for a place…" x-model="searchQuery" @input="onSearchInput()" @keydown="onSearchKeydown($event)" @blur="closeSuggestions()" autocomplete="off" role="combobox" aria-autocomplete="list" :aria-expanded="suggestionsOpen" :aria-activedescendant="activeSuggestion >= 0 ? 'supgeo-suggestion-' + activeSuggestion : null"/>
+								<div x-ref="supgeo-places-attr" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;" aria-hidden="true"></div>
+								<span class="supgeo-search-spinner" x-show="loadingSuggestions" aria-hidden="true"></span>
+								<ul class="supgeo-suggestions" x-show="suggestionsOpen" x-transition:enter="supgeo-suggestions-enter" x-transition:enter-start="supgeo-suggestions-enter-start" x-transition:enter-end="supgeo-suggestions-enter-end" role="listbox">
+									<template x-for="(s, i) in suggestions" :key="s.placeId">
+										<li :id="'supgeo-suggestion-' + i" class="supgeo-suggestion-item" :class="{ '--active': activeSuggestion === i }" role="option" :aria-selected="activeSuggestion === i" @mousedown.prevent="selectSuggestion(s)" @mousemove="activeSuggestion = i">
+											<span class="supgeo-suggestion-main" x-text="s.mainText"></span>
+											<span class="supgeo-suggestion-secondary" x-text="s.secondaryText"></span>
+										</li>
+									</template>
+								</ul>
+							</div>
+							<button x-cloak class="supgeo__search_clear" type="button" x-show="full_address != null" @click="clearAddress()" title="clear address" aria-label="Clear search">
+								<svg width="21" height="20" fill="none" viewbox="0 0 21 20">
+									<path fill="#1f1f1f" fill-rule="evenodd" d="M10.8 0a10 10 0 100 20 10 10 0 100-20m2.59 6L10.8 8.59 8.21 6 6.8 7.41 9.39 10 6.8 12.59 8.21 14l2.59-2.59L13.39 14l1.41-1.41L12.21 10l2.59-2.59zM2.8 10a8.01 8.01 0 0016 0 8.01 8.01 0 00-16 0" clip-rule="evenodd"></path>
+								</svg>
+							</button>
 						</div>
-						<div x-ref="apgeo-search" class="supgeo-search-wrapper" x-show="!hideSearch">
-							<input type="text" class="supgeo-search-input text fullwidth" placeholder="Search for a place…" x-model="searchQuery" @input="onSearchInput()" @keydown="onSearchKeydown($event)" @blur="closeSuggestions()" autocomplete="off" role="combobox" aria-autocomplete="list" :aria-expanded="suggestionsOpen" :aria-activedescendant="activeSuggestion >= 0 ? 'supgeo-suggestion-' + activeSuggestion : null"/>
-							<div x-ref="supgeo-places-attr" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;" aria-hidden="true"></div>
-							<span class="supgeo-search-spinner" x-show="loadingSuggestions" aria-hidden="true"></span>
-							<ul class="supgeo-suggestions" x-show="suggestionsOpen" x-transition:enter="supgeo-suggestions-enter" x-transition:enter-start="supgeo-suggestions-enter-start" x-transition:enter-end="supgeo-suggestions-enter-end" role="listbox">
-								<template x-for="(s, i) in suggestions" :key="s.placeId">
-									<li :id="'supgeo-suggestion-' + i" class="supgeo-suggestion-item" :class="{ '--active': activeSuggestion === i }" role="option" :aria-selected="activeSuggestion === i" @mousedown.prevent="selectSuggestion(s)" @mousemove="activeSuggestion = i">
-										<span class="supgeo-suggestion-main" x-text="s.mainText"></span>
-										<span class="supgeo-suggestion-secondary" x-text="s.secondaryText"></span>
-									</li>
-								</template>
-							</ul>
+					{% endif %}
+					{% set hideAdress = settings.hideAddress ?? false  %}
+					{% if hideAdress  == false %}
+						<div class="supgeo_field" x-show="!notokenAdded && !showEditor && !featureEditorOpen">
+							<div class="input">
+								<input x-model="full_address" name="{{ name }}[full_address]" class="text fullwidth" type="text" placeholder="Full Address">
+							</div>
+							<div class="input">
+								<input x-model="address1" name="{{ name }}[address1]" class="text fullwidth" type="text" placeholder="Address Line 1">
+							</div>
+							<div class="input">
+								<input x-model="suburb" name="{{ name }}[suburb]" class="text fullwidth" type="text" placeholder="Suburb">
+							</div>
+							<div class="input">
+								<input x-model="postcode" name="{{ name }}[postcode]" type="text" class="text fullwidth" placeholder="Postcode">
+							</div>
+							<div class="input">
+								<input x-model="country" name="{{ name }}[country]" class="text fullwidth" type="text" placeholder="Country">
+							</div>
+							<div class="input">
+								<input hidden x-model="countryCode" name="{{ name }}[countryCode]" class="text fullwidth" type="text" placeholder="countryCode">
+							</div>
+							<div class="supgeo_input__group">
+								<div class="input">
+									<input x-model="lat" name="{{ name }}[lat]" type="text" class="text fullwidth" placeholder="Latitude">
+								</div>
+								<div class="input">
+									<input x-model="lng" name="{{ name }}[lng]" type="text" class="text fullwidth" placeholder="Longtitude">
+								</div>
+							</div>
 						</div>
-						<button x-cloak class="supgeo__search_clear" type="button" x-show="full_address != null" @click="clearAddress()" title="clear address" aria-label="Clear search">
-							<svg width="21" height="20" fill="none" viewbox="0 0 21 20">
-								<path fill="#1f1f1f" fill-rule="evenodd" d="M10.8 0a10 10 0 100 20 10 10 0 100-20m2.59 6L10.8 8.59 8.21 6 6.8 7.41 9.39 10 6.8 12.59 8.21 14l2.59-2.59L13.39 14l1.41-1.41L12.21 10l2.59-2.59zM2.8 10a8.01 8.01 0 0016 0 8.01 8.01 0 00-16 0" clip-rule="evenodd"></path>
-							</svg>
+					{% endif %}
+				</div>
+				{# Main Map Panel #}
+				<div x-ref="appgeo-map" class="supgeo__map --small"></div>
+				{# Feature Editor Panel #}
+				<div class="supgeo__feature-editor"
+				x-cloak
+				x-show="featureEditorOpen" x-transition:enter="supgeo-fade-enter" x-transition:enter-start="supgeo-fade-enter-start" x-transition:enter-end="supgeo-fade-enter-end" x-transition:leave="supgeo-fade-leave" x-transition:leave-end="supgeo-fade-leave-end" >
+					<div class="supgeo__fe-header">
+						<span class="supgeo__fe-title">
+							Feature
+							<span class="supgeo__fe-badge" x-text="featureGeomType"></span>
+						</span>
+						<button type="button" class="supgeo__fe-close" @click="closeFeatureEditor()" aria-label="Close feature editor">
+							<svg width="14" height="14" viewbox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
 						</button>
 					</div>
-				{% endif %}
-				{% set hideAdress = settings.hideAddress ?? false  %}
-				{% if hideAdress  == false %}
-					<div class="supgeo_field" x-show="!notokenAdded && !showEditor">
-						<div class="input">
-							<input x-model="full_address" name="{{ name }}[full_address]" class="text fullwidth" type="text" placeholder="Full Address">
-						</div>
-						<div class="input">
-							<input x-model="address1" name="{{ name }}[address1]" class="text fullwidth" type="text" placeholder="Address Line 1">
-						</div>
-						<div class="input">
-							<input x-model="suburb" name="{{ name }}[suburb]" class="text fullwidth" type="text" placeholder="Suburb">
-						</div>
-						<div class="input">
-							<input x-model="postcode" name="{{ name }}[postcode]" type="text" class="text fullwidth" placeholder="Postcode">
-						</div>
-						<div class="input">
-							<input x-model="country" name="{{ name }}[country]" class="text fullwidth" type="text" placeholder="Country">
-						</div>
-						<div class="input">
-							<input hidden x-model="countryCode" name="{{ name }}[countryCode]" class="text fullwidth" type="text" placeholder="countryCode">
-						</div>
-						<div class="supgeo_input__group">
-							<div class="input">
-								<input x-model="lat" name="{{ name }}[lat]" type="text" class="text fullwidth" placeholder="Latitude">
-							</div>
-							<div class="input">
-								<input x-model="lng" name="{{ name }}[lng]" type="text" class="text fullwidth" placeholder="Longtitude">
-							</div>
+
+					<div class="supgeo__fe-tabs">
+						<button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'properties' }" @click="featureEditorTab = 'properties'">Properties</button>
+						{# <button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'vertices' }" @click="featureEditorTab = 'vertices'" x-show="featureGeomType !== 'Point'">Vertices</button> #}
+						<button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'geojson' }" @click="featureEditorTab = 'geojson'">GeoJSON</button>
+					</div>
+
+					{# Properties Tab #}
+					<div class="supgeo__fe-body" x-show="featureEditorTab === 'properties'">
+						<table class="supgeo__fe-table">
+							<thead>
+								<tr>
+									<th>Key</th>
+									<th>Value</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<template x-for="(prop, i) in featureProps" :key="i">
+									<tr>
+										<td><input type="text" x-model="prop.key" @change="featurePropChanged()" class="supgeo__fe-input"/></td>
+										<td><input type="text" x-model="prop.val" @change="featurePropChanged()" class="supgeo__fe-input"/></td>
+										<td>
+											<button type="button" class="supgeo__fe-del" @click="featureRemoveProp(i)" aria-label="Delete property">
+												<svg width="13" height="13" viewbox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+											</button>
+										</td>
+									</tr>
+								</template>
+								<template x-if="featureProps.length === 0">
+									<tr>
+										<td colspan="3" class="supgeo__fe-empty">No properties yet</td>
+									</tr>
+								</template>
+							</tbody>
+						</table>
+						<div class="supgeo__fe-addrow">
+							<input type="text" x-model="featurePropNewKey" placeholder="key" class="supgeo__fe-input" @keydown.enter="featureAddProp()"/>
+							<input type="text" x-model="featurePropNewVal" placeholder="value" class="supgeo__fe-input" @keydown.enter="featureAddProp()"/>
+							<button type="button" class="btn small" @click="featureAddProp()">+ Add</button>
 						</div>
 					</div>
-				{% endif %}
+
+					{# Vertices Tab #}
+					<div class="supgeo__fe-body" x-show="featureEditorTab === 'vertices'">
+						<div class="supgeo__fe-vertices">
+							<template x-for="(v, i) in featureVertices" :key="i">
+								<div class="supgeo__fe-vertex" x-show="!(featureGeomType === 'Polygon' && i === featureVertices.length - 1)">
+									<span class="supgeo__fe-vtx-idx" x-text="'#' + i"></span>
+									<label>Lng</label>
+									<input type="number" step="0.000001" :value="v.lng.toFixed(6)" @change="featureUpdateVertex(i, 'lng', $event.target.value)" class="supgeo__fe-input --mono"/>
+									<label>Lat</label>
+									<input type="number" step="0.000001" :value="v.lat.toFixed(6)" @change="featureUpdateVertex(i, 'lat', $event.target.value)" class="supgeo__fe-input --mono"/>
+									<button type="button" class="supgeo__fe-del" @click="featureDeleteVertex(i)" aria-label="Delete vertex">
+										<svg width="13" height="13" viewbox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+									</button>
+								</div>
+							</template>
+						</div>
+						<button type="button" class="btn small" @click="featureAddVertex()" style="margin-top: 8px;">+ Add vertex</button>
+					</div>
+
+					{# GeoJSON Tab #}
+					<div class="supgeo__fe-body" x-show="featureEditorTab === 'geojson'">
+						<pre class="supgeo__fe-pre" x-text="getFeatureGeoJSONString()"></pre>
+						<div class="supgeo__fe-copy-bar">
+							<button type="button" class="btn small" @click="featureCopyGeoJSON()" :class="{ '--copied': featureCopied }">
+								<span x-text="featureCopied ? '✓ Copied' : 'Copy GeoJSON'"></span>
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div x-ref="appgeo-map" class="supgeo__map --small"></div>
+			{# GeoJson Editor Panel #}
 			<textarea hidden name="{{name}}[geoJson]" x-model="geojsonText"></textarea>
-			</div>
 			<div x-ref="geojson-editor" class="geojson-editor" :class="{ active: showEditor }"></div>
 		</div>
+		{# GeoTool Bar Panel #}
 		<div class="supgeo_tools">
 			<div class="btngroup">
 				<button @click="toggleEditor()" type="button" class=" btn">
@@ -116,10 +207,10 @@
 				<div class="supgeo-upload-progress" x-show="uploadStatus !== null" x-transition:enter="supgeo-fade-enter" x-transition:enter-start="supgeo-fade-enter-start" x-transition:leave="supgeo-fade-leave" x-transition:leave-end="supgeo-fade-leave-end">
 					<div class="supgeo-progress-track" x-show="uploadStatus !== 'error'" role="progressbar" :aria-valuenow="uploadProgress" aria-valuemin="0" aria-valuemax="100">
 						<div class="supgeo-progress-bar" :class="{
-																				'--reading':  uploadStatus === 'reading',
-																				'--parsing':  uploadStatus === 'parsing',
-																				'--done':     uploadStatus === 'done'
-																			}" :style="`width: ${uploadProgress}%`"></div>
+																											'--reading':  uploadStatus === 'reading',
+																											'--parsing':  uploadStatus === 'parsing',
+																											'--done':     uploadStatus === 'done'
+																										}" :style="`width: ${uploadProgress}%`"></div>
 					</div>
 
 					<span class="supgeo-upload-label">
