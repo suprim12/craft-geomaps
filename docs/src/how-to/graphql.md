@@ -4,36 +4,29 @@ The GraphQL query input supports all the same parameters as regular [Searching](
 
 ```graphql
 {
-  entries (
-    map: {
-      unit: Kilometres
-      location: "Maidstone, Kent"
-      country: "UK"
-      radius: 10
-      coordinate: {
-        lat: 51.27136675686769
-        lng: 0.4939985275268555
-      }
-    }
-    section: "locations"
-    orderBy: "distance"
-  ) {
-    title
-    ... on locations_locations_Entry {
-      map {
-        lat
-        lng
-        distance
-        zoom
-        address
-        parts {
-          number
-          address
-          city
+  entries(section: "locations",
+  fieldHandle:{
+    location: "Adelaide, South Australia",
+    radius: 10
+    coordinate:{
+        lat: -34.928499,
+        lng: 138.600746,
+    },
+  },
+      orderBy: "distance") {
+    ... on EntryInterface {
+      title
+      ... on contentPage_Entry {
+      fieldHandle {
+          lat
+          lng
+          address1
+          full_address
+          geoJson
           postcode
-          county
-          state
+          suburb
           country
+          countryCode
         }
       }
     }

@@ -82,6 +82,7 @@ class GeoFieldBehavior extends Behavior
         $this->_pendingSearches = [];
     }
 
+
     private function applyGeoSearch(ElementQuery $query, $field, array $params): void
     {
         if (!$query->subQuery) {
@@ -107,6 +108,11 @@ class GeoFieldBehavior extends Behavior
         }
 
         if (!$coords) {
+              Craft::warning(
+                "GeoFieldBehavior: geocoding failed for location \"{$location}\"",
+                'geo'
+            );
+            $query->orderBy = [];
             $query->subQuery->andWhere('1=0');
             return;
         }
