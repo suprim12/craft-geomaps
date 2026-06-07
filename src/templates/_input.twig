@@ -18,12 +18,10 @@
 
 
 {% if global_settings.mapToken is not empty %}
-	<div x-data="appgeo" 
-	   x-init="initMap({{mapData|json_encode}},true,{{settings|json_encode()}})" 
-	   class="supgeo {{settings.hideMap ? ' --hideMap ':''}}"
-	  :class="{ ' --showEditor ': showEditor }">
+	<div x-data="appgeo" x-init="initMap({{mapData|json_encode}},true,{{settings|json_encode()}})" class="supgeo {{settings.hideMap ? ' --hideMap ':''}}" :class="{ ' --showEditor ': showEditor }">
 		<div class="supgeo__wrapper" x-ref="geowrapper">
-			<div class="supgeo__map_search">
+			<div
+				class="supgeo__map_search">
 				{# Autocomplete Panel #}
 				<div class="supgeo__wrapper_map">
 					{% if settings.hideSearch == false %}
@@ -88,60 +86,56 @@
 				{# Main Map Panel #}
 				<div x-ref="appgeo-map" class="supgeo__map --small"></div>
 				{# Property Value Editor Panel #}
-				<div class="supgeo__prop-modal-overlay"
-				x-cloak
-				x-show="featurePropEditorOpen" @click.self="closePropEditor()">
-				<div class="supgeo__prop-modal">
-					<div class="supgeo__prop-modal-tabs">
-						<button type="button" :class="{ '--active': featureEditingPropType === 'text' }"    @click="setPropType('text')">Text</button>
-						<button type="button" :class="{ '--active': featureEditingPropType === 'json' }"    @click="setPropType('json')">JSON</button>
-						<button type="button" :class="{ '--active': featureEditingPropType === 'boolean' }" @click="setPropType('boolean')">True/False</button>
-						<button type="button" :class="{ '--active': featureEditingPropType === 'number' }"  @click="setPropType('number')">Number</button>
-						<button type="button" :class="{ '--active': featureEditingPropType === 'color' }"   @click="setPropType('color')">Color</button>
-					</div>
-					<div class="supgeo__prop-modal-body">
-						<template x-if="featureEditingPropType === 'text' || featureEditingPropType === 'json' || featureEditingPropType === 'number'">
-							<textarea class="supgeo__prop-modal-textarea" x-model="featureEditingPropRaw" :class="{ '--mono': featureEditingPropType !== 'text', '--error': featureEditingPropError }" rows="6" spellcheck="false"></textarea>
-						</template>
-						<template x-if="featureEditingPropType === 'boolean'">
-							<div class="supgeo__prop-bool">
-								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'true' }"  @click="featureEditingPropRaw = 'true'">
-									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-									True
-								</button>
-								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'false' }" @click="featureEditingPropRaw = 'false'">
-									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-									False
-								</button>
-							</div>
-						</template>
-						<template x-if="featureEditingPropType === 'color'">
-							<div class="supgeo__prop-color">
-								<div class="supgeo__prop-color-swatch" :style="'background:' + featureEditingPropRaw"></div>
-								<input type="color" :value="featureEditingPropRaw" @input="featureEditingPropRaw = $event.target.value" class="supgeo__prop-color-picker" />
-								<input type="text"  x-model="featureEditingPropRaw" class="supgeo__fe-input --mono" placeholder="#6366f1" />
-							</div>
-						</template>
-						<p class="supgeo__prop-modal-error" x-show="featureEditingPropError" x-text="featureEditingPropError"></p>
-					</div>
+				<div class="supgeo__prop-modal-overlay" x-cloak x-show="featurePropEditorOpen" @click.self="closePropEditor()">
+					<div class="supgeo__prop-modal">
+						<div class="supgeo__prop-modal-tabs">
+							<button type="button" :class="{ '--active': featureEditingPropType === 'text' }" @click="setPropType('text')">Text</button>
+							<button type="button" :class="{ '--active': featureEditingPropType === 'json' }" @click="setPropType('json')">JSON</button>
+							<button type="button" :class="{ '--active': featureEditingPropType === 'boolean' }" @click="setPropType('boolean')">True/False</button>
+							<button type="button" :class="{ '--active': featureEditingPropType === 'number' }" @click="setPropType('number')">Number</button>
+							<button type="button" :class="{ '--active': featureEditingPropType === 'color' }" @click="setPropType('color')">Color</button>
+						</div>
+						<div class="supgeo__prop-modal-body">
+							<template x-if="featureEditingPropType === 'text' || featureEditingPropType === 'json' || featureEditingPropType === 'number'">
+								<textarea class="supgeo__prop-modal-textarea" x-model="featureEditingPropRaw" :class="{ '--mono': featureEditingPropType !== 'text', '--error': featureEditingPropError }" rows="6" spellcheck="false"></textarea>
+							</template>
+							<template x-if="featureEditingPropType === 'boolean'">
+								<div class="supgeo__prop-bool">
+									<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'true' }" @click="featureEditingPropRaw = 'true'">
+										<svg width="14" height="14" viewbox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+										True
+									</button>
+									<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'false' }" @click="featureEditingPropRaw = 'false'">
+										<svg width="14" height="14" viewbox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+										False
+									</button>
+								</div>
+							</template>
+							<template x-if="featureEditingPropType === 'color'">
+								<div class="supgeo__prop-color">
+									<div class="supgeo__prop-color-swatch" :style="'background:' + featureEditingPropRaw"></div>
+									<input type="color" :value="featureEditingPropRaw" @input="featureEditingPropRaw = $event.target.value" class="supgeo__prop-color-picker"/>
+									<input type="text" x-model="featureEditingPropRaw" class="supgeo__fe-input --mono" placeholder="#6366f1"/>
+								</div>
+							</template>
+							<p class="supgeo__prop-modal-error" x-show="featureEditingPropError" x-text="featureEditingPropError"></p>
+						</div>
 
-					{# Footer #}
-					<div class="supgeo__prop-modal-footer">
-						<button type="button" class="supgeo__fe-del-btn" @click="deletePropFromEditor()">
-							<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M3 3l.5 8h6L10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-							Delete
-						</button>
-						<div style="display:flex;gap:6px;">
-							<button type="button" class="btn" @click="closePropEditor()">Cancel</button>
-							<button type="button" class="btn submit" @click="savePropEditor()">✓ Done</button>
+						{# Footer #}
+						<div class="supgeo__prop-modal-footer">
+							<button type="button" class="supgeo__fe-del-btn" @click="deletePropFromEditor()">
+								<svg width="13" height="13" viewbox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M3 3l.5 8h6L10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+								Delete
+							</button>
+							<div style="display:flex;gap:6px;">
+								<button type="button" class="btn" @click="closePropEditor()">Cancel</button>
+								<button type="button" class="btn submit" @click="savePropEditor()">✓ Done</button>
+							</div>
 						</div>
 					</div>
 				</div>
-				</div>
 				{# Feature Editor Panel #}
-				<div class="supgeo__feature-editor"
-				x-cloak
-				x-show="featureEditorOpen" x-transition:enter="supgeo-fade-enter" x-transition:enter-start="supgeo-fade-enter-start" x-transition:enter-end="supgeo-fade-enter-end" x-transition:leave="supgeo-fade-leave" x-transition:leave-end="supgeo-fade-leave-end" >
+				<div class="supgeo__feature-editor" x-cloak x-show="featureEditorOpen" x-transition:enter="supgeo-fade-enter" x-transition:enter-start="supgeo-fade-enter-start" x-transition:enter-end="supgeo-fade-enter-end" x-transition:leave="supgeo-fade-leave" x-transition:leave-end="supgeo-fade-leave-end">
 					<div class="supgeo__fe-header">
 						<span class="supgeo__fe-title">
 							Feature
@@ -173,7 +167,7 @@
 										<td><input type="text" x-model="prop.val" @change="featurePropChanged()" class="supgeo__fe-input"/></td>
 										<td>
 											<button type="button" class="supgeo__fe-edit-btn" @click="openPropEditor(i)" aria-label="Edit value">
-												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 													<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
 													<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
 												</svg>
@@ -220,7 +214,7 @@
 						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
 						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
 					</svg>
-					GeoJSON Editor
+					 <span x-text="showEditor ? 'Hide GeoJSON Editor' : 'GeoJSON Editor'">GeoJSON Editor</span>
 				</button>
 				<button class="btn" type="button" title="Download" @click.prevent="download({{ elementId }})">
 					<svg xmlns="http://www.w3.org/2000/svg" style="height: 15px; width: 15px; margin-right: 5px" fill="none" viewbox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -242,10 +236,10 @@
 				<div class="supgeo-upload-progress" x-show="uploadStatus !== null" x-transition:enter="supgeo-fade-enter" x-transition:enter-start="supgeo-fade-enter-start" x-transition:leave="supgeo-fade-leave" x-transition:leave-end="supgeo-fade-leave-end">
 					<div class="supgeo-progress-track" x-show="uploadStatus !== 'error'" role="progressbar" :aria-valuenow="uploadProgress" aria-valuemin="0" aria-valuemax="100">
 						<div class="supgeo-progress-bar" :class="{
-																											'--reading':  uploadStatus === 'reading',
-																											'--parsing':  uploadStatus === 'parsing',
-																											'--done':     uploadStatus === 'done'
-																										}" :style="`width: ${uploadProgress}%`"></div>
+																																		'--reading':  uploadStatus === 'reading',
+																																		'--parsing':  uploadStatus === 'parsing',
+																																		'--done':     uploadStatus === 'done'
+																																	}" :style="`width: ${uploadProgress}%`"></div>
 					</div>
 
 					<span class="supgeo-upload-label">
