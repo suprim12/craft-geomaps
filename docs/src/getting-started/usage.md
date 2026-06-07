@@ -28,7 +28,7 @@ As a string, it outputs the full address as it appears in the Map field:
 
 The example above outputs the address as a comma-separated string, excluding the country.
 
-| Part | Description |
+| Key | Description |
 |---|---|
 | `address1` | The street address (not the full address) |
 | `full_address` | The formatted address |

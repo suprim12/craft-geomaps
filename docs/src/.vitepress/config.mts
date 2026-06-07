@@ -38,12 +38,6 @@ export default defineConfig({
           { text: 'Render Maps', link: '/rendering/render' },
         ],
       },
-      {
-        text: 'Geo-location',
-        items: [
-          { text: 'Get User Location', link: '/geolocation/get' },
-        ],
-      },
     ],
 
     socialLinks: [
