@@ -10,10 +10,10 @@
 
 
 namespace sup\craftgeo\services;
-
+use yii\base\Component;
 use craft\helpers\Json;
 
-class ZoneService extends \yii\base\Component
+class ZoneService extends Component
 {
     public function determineZonesFromLatLng(float $lat, float $lng, array $electoratesData): array
     {

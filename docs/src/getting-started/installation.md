@@ -2,7 +2,7 @@
 
 ## Plugin Store
 
-You can install **Maps** from the [Craft Plugin Store](https://plugins.craftcms.com) inside your Craft admin. Simply search for "Maps" and click the icon.
+You can install **Geo Maps** from the [Craft Plugin Store](https://plugins.craftcms.com) inside your Craft admin. Simply search for "Maps" and click the icon.
 
 ## Composer
 
