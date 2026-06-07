@@ -107,11 +107,11 @@
 							<div class="supgeo__prop-bool">
 								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'true' }"  @click="featureEditingPropRaw = 'true'">
 									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-									true
+									True
 								</button>
 								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'false' }" @click="featureEditingPropRaw = 'false'">
 									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-									false
+									False
 								</button>
 							</div>
 						</template>
@@ -158,7 +158,7 @@
 					</div>
 					{# Properties Tab #}
 					<div class="supgeo__fe-body" x-show="featureEditorTab === 'properties'">
-						<table class="supgeo__fe-table">
+						<table class="supgeo__fe-table" x-show="featureProps.length > 0">
 							<thead>
 								<tr>
 									<th>Key</th>
@@ -183,13 +183,11 @@
 										</td>
 									</tr>
 								</template>
-								<template x-if="featureProps.length === 0">
-									<tr>
-										<td colspan="3" class="supgeo__fe-empty">No properties yet</td>
-									</tr>
-								</template>
 							</tbody>
 						</table>
+						<div class="supgeo__fe-empty" x-show="featureProps.length <= 0">
+							No properties yet
+						</div>
 						<div class="supgeo__fe-addrow">
 							<input type="text" x-model="featurePropNewKey" placeholder="key" class="supgeo__fe-input" @keydown.enter="featureAddProp()"/>
 							<input type="text" x-model="featurePropNewVal" placeholder="value" class="supgeo__fe-input" @keydown.enter="featureAddProp()"/>
