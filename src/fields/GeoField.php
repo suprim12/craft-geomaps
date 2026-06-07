@@ -32,6 +32,7 @@ use craft\gql\types\QueryArgument;
 use sup\craftgeo\integrations\graphql\types\GeoType;
 use GraphQL\Type\Definition\Type;
 use craft\helpers\Json;
+use sup\craftgeo\integrations\graphql\types\GeoQueryArgument;
 use sup\craftgeo\models\EmbedMap;
 use sup\craftgeo\models\GeoValue;
 use sup\craftgeo\models\StaticMap;
@@ -400,7 +401,7 @@ class GeoField extends Field implements PreviewableFieldInterface
     {
         return [
             'name' => $this->handle,
-            'type' => QueryArgument::getType(),
+            'type' => GeoQueryArgument::getType(),
         ];
     }
 

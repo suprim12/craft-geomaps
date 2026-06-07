@@ -89,15 +89,23 @@ class GeoFieldBehavior extends Behavior
             return;
         }
 
-        $location = $params['location'] ?? null;
-        $radius   = (float) ($params['radius'] ?? 50);
-        $unit     = GeoService::normalizeDistance($params['unit'] ?? 'km');
-        $country  = $params['country'] ?? null;
+        $location   = $params['location']   ?? null;
+        $coordinate = $params['coordinate'] ?? null; 
+        $radius     = (float) ($params['radius'] ?? 50);
+        $unit       = GeoService::normalizeDistance($params['unit'] ?? 'km');
+        $country    = $params['country'] ?? null;
 
-        if (!$location) {
-            return;
+        $coords = null;
+
+        if ($coordinate && isset($coordinate['lat'], $coordinate['lng'])) {
+            $coords = [
+                'lat' => (float) $coordinate['lat'],
+                'lng' => (float) $coordinate['lng'],
+            ];
+        } elseif ($location) {
+            $coords = GeoService::resolveLocation($location, $country);
         }
-        $coords = GeoService::resolveLocation($location, $country);
+
         if (!$coords) {
             $query->subQuery->andWhere('1=0');
             return;

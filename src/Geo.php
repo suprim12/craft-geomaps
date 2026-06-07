@@ -30,6 +30,8 @@ use craft\events\RegisterGqlTypesEvent;
 use craft\services\Gql;
 use craft\web\twig\variables\CraftVariable;
 use sup\craftgeo\behaviors\GeoFieldBehavior;
+use sup\craftgeo\integrations\graphql\types\GeoCoordsInput;
+use sup\craftgeo\integrations\graphql\types\GeoQueryArgument;
 use sup\craftgeo\integrations\graphql\types\GeoType;
 use sup\craftgeo\migrations\Install;
 use sup\craftgeo\services\MapService;
@@ -124,6 +126,8 @@ class Geo extends BasePlugin
             Gql::EVENT_REGISTER_GQL_TYPES,
             function (RegisterGqlTypesEvent $event) {
                 $event->types[] = GeoType::class;
+                $event->types[] = GeoQueryArgument::class;
+                $event->types[] = GeoCoordsInput::class;
             }
         );
     }
