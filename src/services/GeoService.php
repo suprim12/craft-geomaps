@@ -547,7 +547,7 @@ class GeoService extends Component
     private static function geocodeAddress(string $address, ?string $country = null): ?array
     {
         $settings = Geo::getInstance()->getSettings();
-        $apiKey   = $settings->geoToken ?? null;
+        $apiKey   = $settings->getGeoToken() ?? null;
 
         return static::geocodeWithGoogle($address, $apiKey, $country);
 

@@ -97,9 +97,7 @@ class GeoFieldBehavior extends Behavior
         if (!$location) {
             return;
         }
-
         $coords = GeoService::resolveLocation($location, $country);
-
         if (!$coords) {
             $query->subQuery->andWhere('1=0');
             return;

@@ -44,7 +44,8 @@ class GeoType extends ObjectType implements SingularTypeInterface
             'address1'     => ['type' => Type::string(), 'description' => 'Address line 1'],
             'suburb'       => ['type' => Type::string(), 'description' => 'Suburb'],
             'postcode'     => ['type' => Type::string(), 'description' => 'Postcode'],
-            'country'      => ['type' => Type::string(), 'description' => 'Country code'],
+            'country'      => ['type' => Type::string(), 'description' => 'Country'],
+            'countryCode'      => ['type' => Type::string(), 'description' => 'Country Code'],
             'geoJson'      => ['type' => Type::string(), 'description' => 'GeoJSON string'],
         ];
     }
