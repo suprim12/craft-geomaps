@@ -87,6 +87,57 @@
 				</div>
 				{# Main Map Panel #}
 				<div x-ref="appgeo-map" class="supgeo__map --small"></div>
+				{# Property Value Editor Panel #}
+				<div class="supgeo__prop-modal-overlay"
+				x-cloak
+				x-show="featurePropEditorOpen" @click.self="closePropEditor()">
+				<div class="supgeo__prop-modal">
+					<div class="supgeo__prop-modal-tabs">
+						<button type="button" :class="{ '--active': featureEditingPropType === 'text' }"    @click="setPropType('text')">Text</button>
+						<button type="button" :class="{ '--active': featureEditingPropType === 'json' }"    @click="setPropType('json')">JSON</button>
+						<button type="button" :class="{ '--active': featureEditingPropType === 'boolean' }" @click="setPropType('boolean')">True/False</button>
+						<button type="button" :class="{ '--active': featureEditingPropType === 'number' }"  @click="setPropType('number')">Number</button>
+						<button type="button" :class="{ '--active': featureEditingPropType === 'color' }"   @click="setPropType('color')">Color</button>
+					</div>
+					<div class="supgeo__prop-modal-body">
+						<template x-if="featureEditingPropType === 'text' || featureEditingPropType === 'json' || featureEditingPropType === 'number'">
+							<textarea class="supgeo__prop-modal-textarea" x-model="featureEditingPropRaw" :class="{ '--mono': featureEditingPropType !== 'text', '--error': featureEditingPropError }" rows="6" spellcheck="false"></textarea>
+						</template>
+						<template x-if="featureEditingPropType === 'boolean'">
+							<div class="supgeo__prop-bool">
+								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'true' }"  @click="featureEditingPropRaw = 'true'">
+									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+									true
+								</button>
+								<button type="button" class="supgeo__prop-bool-btn" :class="{ '--active': featureEditingPropRaw === 'false' }" @click="featureEditingPropRaw = 'false'">
+									<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+									false
+								</button>
+							</div>
+						</template>
+						<template x-if="featureEditingPropType === 'color'">
+							<div class="supgeo__prop-color">
+								<div class="supgeo__prop-color-swatch" :style="'background:' + featureEditingPropRaw"></div>
+								<input type="color" :value="featureEditingPropRaw" @input="featureEditingPropRaw = $event.target.value" class="supgeo__prop-color-picker" />
+								<input type="text"  x-model="featureEditingPropRaw" class="supgeo__fe-input --mono" placeholder="#6366f1" />
+							</div>
+						</template>
+						<p class="supgeo__prop-modal-error" x-show="featureEditingPropError" x-text="featureEditingPropError"></p>
+					</div>
+
+					{# Footer #}
+					<div class="supgeo__prop-modal-footer">
+						<button type="button" class="supgeo__fe-del-btn" @click="deletePropFromEditor()">
+							<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M3 3l.5 8h6L10 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+							Delete
+						</button>
+						<div style="display:flex;gap:6px;">
+							<button type="button" class="btn" @click="closePropEditor()">Cancel</button>
+							<button type="button" class="btn submit" @click="savePropEditor()">✓ Done</button>
+						</div>
+					</div>
+				</div>
+				</div>
 				{# Feature Editor Panel #}
 				<div class="supgeo__feature-editor"
 				x-cloak
@@ -103,10 +154,8 @@
 
 					<div class="supgeo__fe-tabs">
 						<button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'properties' }" @click="featureEditorTab = 'properties'">Properties</button>
-						{# <button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'vertices' }" @click="featureEditorTab = 'vertices'" x-show="featureGeomType !== 'Point'">Vertices</button> #}
 						<button type="button" class="supgeo__fe-tab" :class="{ '--active': featureEditorTab === 'geojson' }" @click="featureEditorTab = 'geojson'">GeoJSON</button>
 					</div>
-
 					{# Properties Tab #}
 					<div class="supgeo__fe-body" x-show="featureEditorTab === 'properties'">
 						<table class="supgeo__fe-table">
@@ -122,6 +171,11 @@
 									<tr>
 										<td><input type="text" x-model="prop.key" @change="featurePropChanged()" class="supgeo__fe-input"/></td>
 										<td><input type="text" x-model="prop.val" @change="featurePropChanged()" class="supgeo__fe-input"/></td>
+										<td>
+											<button type="button" class="supgeo__fe-edit-btn" @click="openPropEditor(i)" aria-label="Edit value">
+												<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5a1.414 1.414 0 012 2L3.5 10.5 1 11l.5-2.5 7-7z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+											</button>
+										</td>
 										<td>
 											<button type="button" class="supgeo__fe-del" @click="featureRemoveProp(i)" aria-label="Delete property">
 												<svg width="13" height="13" viewbox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -142,26 +196,6 @@
 							<button type="button" class="btn small" @click="featureAddProp()">+ Add</button>
 						</div>
 					</div>
-
-					{# Vertices Tab #}
-					<div class="supgeo__fe-body" x-show="featureEditorTab === 'vertices'">
-						<div class="supgeo__fe-vertices">
-							<template x-for="(v, i) in featureVertices" :key="i">
-								<div class="supgeo__fe-vertex" x-show="!(featureGeomType === 'Polygon' && i === featureVertices.length - 1)">
-									<span class="supgeo__fe-vtx-idx" x-text="'#' + i"></span>
-									<label>Lng</label>
-									<input type="number" step="0.000001" :value="v.lng.toFixed(6)" @change="featureUpdateVertex(i, 'lng', $event.target.value)" class="supgeo__fe-input --mono"/>
-									<label>Lat</label>
-									<input type="number" step="0.000001" :value="v.lat.toFixed(6)" @change="featureUpdateVertex(i, 'lat', $event.target.value)" class="supgeo__fe-input --mono"/>
-									<button type="button" class="supgeo__fe-del" @click="featureDeleteVertex(i)" aria-label="Delete vertex">
-										<svg width="13" height="13" viewbox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-									</button>
-								</div>
-							</template>
-						</div>
-						<button type="button" class="btn small" @click="featureAddVertex()" style="margin-top: 8px;">+ Add vertex</button>
-					</div>
-
 					{# GeoJSON Tab #}
 					<div class="supgeo__fe-body" x-show="featureEditorTab === 'geojson'">
 						<pre class="supgeo__fe-pre" x-text="getFeatureGeoJSONString()"></pre>
