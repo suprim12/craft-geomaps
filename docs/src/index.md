@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: Maps
+  name: Geo Maps
   text: Beautifully simple. Deceptively powerful.
   tagline: A map field for Craft CMS that works out of the box.
   actions:

@@ -25,16 +25,25 @@ class StaticMap extends Model
     public int    $scale          = 1;
     public array  $markers        = [];
     public string $format         = 'png';
+    public string $mapType        = 'roadmap';
+    public mixed $colorScheme        = null;
+    private ?string $_resolvedCenter = null;
 
     public function img(array $options = []): ?string
     {
         $this->setOptions($options);
+        $this->_resolvedCenter = null;
         return $this->buildUrl(1);
     }
 
     public function imgSrcSet(array $options = []): ?string
     {
         $this->setOptions($options);
+        $this->_resolvedCenter = null;
+        $this->_resolvedCenter = $this->resolveCenter();
+        if ($this->_resolvedCenter === null) {
+            return null;
+        }
         $url1x = $this->buildUrl(1);
         $url2x = $this->buildUrl(2);
 
@@ -63,7 +72,7 @@ class StaticMap extends Model
             Craft::warning('GeoMaps: mapToken is required for static maps', 'geo');
             return null;
         }
-        $center = $this->resolveCenter();
+        $center = $this->_resolvedCenter ?? $this->resolveCenter();
 
         if (!$center) {
             Craft::warning('GeoMaps: could not resolve center for static map', 'geo');
@@ -77,7 +86,9 @@ class StaticMap extends Model
             'scale'   => $scale,
             'format'  => $this->format,
             'center'  => $center,
-            'maptype' => 'roadmap',
+            'maptype' => $this->mapType ?? 'roadmap',
+            'mapId' => "DEMO_MAP_ID",
+            'colorScheme' => $this->colorScheme ?? null
         ];
 
         // Build markers

@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2026 Suprim Golay
  */
 
-
 namespace sup\craftgeo\models;
 
 use Craft;
@@ -16,20 +15,26 @@ use craft\helpers\Html;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
 use sup\craftgeo\Geo;
+use sup\craftgeo\services\GeoService;
 
 class EmbedMap extends Model
 {
-    public mixed  $center         = null;
-    public mixed  $centerFallback = null;
-    public int    $width          = 640;
-    public int    $height         = 400;
-    public int    $zoom           = 14;
-    public int    $scale          = 1;
-    public array  $markers        = [];
-    public ?string $id            = null;
-    public array  $options        = [];
+    public mixed   $center         = null;
+    public mixed   $centerFallback = null;
+    public int     $width          = 640;
+    public int     $height         = 400;
+    public int     $zoom           = 14;
+    public int     $scale          = 1;
+    public array   $markers        = [];
+    public ?string $id             = null;
+    public array   $options        = [];
 
-    public function embed(array $options = []): string
+    public function __toString(): string
+    {
+        return $this->embed();
+    }
+
+    public function embed(array $options = []): \Twig\Markup
     {
         $this->setOptions($options);
 
@@ -76,11 +81,18 @@ class EmbedMap extends Model
                     }).addTo(map);
                     if (config.markers && config.markers.length) {
                         config.markers.forEach(function(marker) {
-                            if (marker.lat && marker.lng) {
-                                var m = L.marker([marker.lat, marker.lng]);
-                                if (marker.label) m.bindPopup(marker.label);
-                                m.addTo(map);
-                            }
+                            if (marker.lat == null || marker.lng == null) return;
+                            var color = marker.color || '#ff0000';
+                            var m = L.circleMarker([marker.lat, marker.lng], {
+                                radius: 8,
+                                fillColor: color,
+                                color: '#fff',
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.9,
+                            });
+                            if (marker.label) m.bindPopup(marker.label);
+                            m.addTo(map);
                         });
                     }
                     return;
@@ -94,13 +106,21 @@ class EmbedMap extends Model
 
                     if (config.markers && config.markers.length) {
                         config.markers.forEach(function(marker) {
-                            if (marker.lat && marker.lng) {
-                                new google.maps.Marker({
-                                    position: { lat: marker.lat, lng: marker.lng },
-                                    map: map,
-                                    label: marker.label || null,
-                                });
-                            }
+                            if (marker.lat == null || marker.lng == null) return;
+                            var color = marker.color || '#ff0000';
+                            new google.maps.Marker({
+                                position: { lat: marker.lat, lng: marker.lng },
+                                map: map,
+                                label: marker.label || null,
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    fillColor: color,
+                                    fillOpacity: 1,
+                                    strokeColor: '#ffffff',
+                                    strokeWeight: 2,
+                                    scale: 8,
+                                },
+                            });
                         });
                     }
                     return;
@@ -119,11 +139,33 @@ class EmbedMap extends Model
 
         $view->registerJs($js, \craft\web\View::POS_END);
 
-        return Html::tag('div', '', [
+        $noscript = '';
+        $staticUrl = (new StaticMap())->img([
+            'center' => $center,
+            'zoom'   => $this->zoom,
+            'width'  => $this->width,
+            'height' => $this->height,
+        ]);
+        if ($staticUrl) {
+            $noscript = Html::tag('noscript',
+                Html::tag('img', '', [
+                    'src'    => $staticUrl,
+                    'width'  => $this->width,
+                    'height' => $this->height,
+                    'alt'    => 'Map',
+                    'style'  => $style,
+                ])
+            );
+        }
+
+
+          $html = Html::tag('div', $noscript, [
             'id'    => $id,
             'style' => $style,
             'data'  => ['geo-embed' => true],
         ]);
+
+        return  new \Twig\Markup($html, 'UTF-8');
     }
 
     private function setOptions(array $options): void
@@ -148,11 +190,12 @@ class EmbedMap extends Model
         }
 
         if (is_string($center) && !empty(trim($center))) {
-            $coords = \sup\craftgeo\services\GeoService::resolveLocation($center);
-            if ($coords) return $coords;
+            $coords = GeoService::resolveLocation($center);
+            if ($coords) {
+                return $coords;
+            }
         }
 
-        // Fallback
         if ($this->centerFallback) {
             $fb  = $this->centerFallback;
             $lat = $fb['lat'] ?? $fb[0] ?? null;
@@ -162,7 +205,7 @@ class EmbedMap extends Model
             }
         }
 
-        return ['lat' => 0, 'lng' => 0];
+        return ['lat' => 0.0, 'lng' => 0.0];
     }
 
     private function resolveMarkers(array $center): array

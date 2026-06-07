@@ -1,4 +1,4 @@
-# Search by Location
+# Location Search   
 
 Being able to search your maps by location is one of the most important features of a map plugin. Here's how it works.
 
