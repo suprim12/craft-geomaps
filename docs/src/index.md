@@ -3,33 +3,31 @@ layout: home
 
 hero:
   name: Geo Maps
-  text: Beautifully simple. Deceptively powerful.
-  tagline: A map field for Craft CMS that works out of the box.
+  text: Intuitive, powerful Simple Map.
+  tagline: A full-featured geo field for Craft CMS — with search, GeoJSON editing, GraphQL, and more.
   actions:
     - theme: brand
       text: Get Started
       link: /getting-started/installation
     - theme: alt
       text: View on Plugin Store
-      link: https://plugins.craftcms.com/simplemap
-
-features:
-  - icon: 🔍
-    title: Search by Location
-    details: Filter entries by proximity to a given location. Sort by distance and display results on a map.
-  - icon: 🔗
-    title: GraphQL Support
-    details: Full GraphQL support for headless Craft projects, with location-based querying built in.
-  - icon: 📐
-    title: Feed Me support
-    details: Full feedme support for projects.
+      link: https://plugins.craftcms.com/geomaps
 ---
+
+## Features:
+- Search by Location: Filter entries by proximity to a given location. Sort by distance and display results on a map.
+- GeoJson Editing: Edit and manage GeoJson data directly within the Craft control panel.
+- Feature Editor panel with Properties, GeoJSON tabs.
+- Map Rendering: Static and Dynamic map rendering options. 
+- Address Autocomplete: Integrated address autocomplete for easy location entry.      
+- GraphQL Support: Full GraphQL support for headless Craft projects, with location-based querying built in.
+- Feed Me support: Full Feedme support for projects. Full compatibility with Craft's Feed Me plugin
 
 ## Overview
 
 **Maps** is a beautifully simple, yet deceptively powerful map field for [Craft CMS](https://craftcms.com). It works out of the box with no setup or API tokens needed.
 
-<a href="https://plugins.craftcms.com/" target="_blank" class="cta-button">View Maps on the Plugin Store</a>
+<a href="https://plugins.craftcms.com/geomaps" target="_blank" class="cta-button">View Maps on the Plugin Store</a>
 
 <style>
 .cta-button {

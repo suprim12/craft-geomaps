@@ -4,7 +4,16 @@
 
 # Craft Geo Maps
 
-Geo maps
+Geo maps is a full-featured geo field for Craft CMS — with search, GeoJSON editing, GraphQL, and more.
+
+## Features
+- Search by Location: Filter entries by proximity to a given location. Sort by distance and display results on a map.
+- GeoJson Editing: Edit and manage GeoJson data directly within the Craft control panel.
+- Feature Editor panel with Properties, GeoJSON tabs.
+- Map Rendering: Static and Dynamic map rendering options. 
+- Address Autocomplete: Integrated address autocomplete for easy location entry.      
+- GraphQL Support: Full GraphQL support for headless Craft projects, with location-based querying built in.
+- Feed Me support: Full Feedme support for projects. Full compatibility with Craft's Feed Me plugin
 
 ## Requirements
 
