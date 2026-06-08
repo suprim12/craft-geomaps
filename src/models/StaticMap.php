@@ -15,10 +15,13 @@ use craft\helpers\App;
 use sup\craftgeo\Geo;
 use sup\craftgeo\services\GeoService;
 
+use function Embed\isEmpty;
+
 class StaticMap extends Model
 {
     public mixed  $center         = null;
     public mixed  $centerFallback = null;
+    public mixed  $mapId = null;
     public int    $width          = 640;
     public int    $height         = 400;
     public int    $zoom           = 14;
@@ -74,7 +77,7 @@ class StaticMap extends Model
         }
         $center = $this->_resolvedCenter ?? $this->resolveCenter();
 
-        if (!$center) {
+        if (!$center && count($this->markers) <= 0) {
             Craft::warning('GeoMaps: could not resolve center for static map', 'geo');
             return null;
         }
@@ -85,11 +88,17 @@ class StaticMap extends Model
             'zoom'    => $this->zoom,
             'scale'   => $scale,
             'format'  => $this->format,
-            'center'  => $center,
             'maptype' => $this->mapType ?? 'roadmap',
-            'mapId' => "DEMO_MAP_ID",
             'colorScheme' => $this->colorScheme ?? null
         ];
+
+        if(!isEmpty($this->center)){
+            $params['center'] =  $this->center;
+        }
+
+        if(!isEmpty($this->mapId)){
+            $params['mapId'] = $this->mapId;
+        };
 
         // Build markers
         $markerParams = $this->buildMarkerParams($center);
@@ -121,13 +130,31 @@ class StaticMap extends Model
         }
 
         if ($this->centerFallback) {
-            $fb = $this->centerFallback;
-
+            $fb  = $this->centerFallback;
             $lat = $fb['lat'] ?? $fb[0] ?? null;
             $lng = $fb['lng'] ?? $fb[1] ?? null;
 
             if (is_numeric($lat) && is_numeric($lng)) {
                 return "{$lat},{$lng}";
+            }
+        }
+
+        // Last resort: derive center from the first marker's location
+        $first = $this->markers[0] ?? null;
+        if ($first !== null) {
+            $location = $first['location'] ?? null;
+
+            if (is_array($location)) {
+                $lat = $location['lat'] ?? $location[0] ?? null;
+                $lng = $location['lng'] ?? $location[1] ?? null;
+
+                if (is_numeric($lat) && is_numeric($lng)) {
+                    return "{$lat},{$lng}";
+                }
+            }
+
+            if (is_string($location) && !empty(trim($location))) {
+                return urlencode(trim($location));
             }
         }
 

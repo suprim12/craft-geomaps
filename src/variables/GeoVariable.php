@@ -38,7 +38,7 @@ class GeoVariable
         return $map;
     }
 
-    public function embed(array $options = []): string
+    public function embed(array $options = []): \Twig\Markup
     {
         return (new EmbedMap())->embed($options);
     }
